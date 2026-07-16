@@ -26,7 +26,6 @@ st.divider()
 # 챗봇 아이콘
 st.markdown(f"""
 <style>
-    /* 아이콘 버튼을 동그란 캐릭터 아이콘처럼 (챗봇 버튼에만 적용) */
     div.st-key-chat_toggle_btn {{
         position: relative;
         width: 46px;
@@ -41,7 +40,7 @@ st.markdown(f"""
         background-color: #ffffff !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }}
-    /* 말풍선 (아이콘 아래, 꼬리가 아이콘을 가리킴, 텍스트 한 줄) */
+    # 챗봇 말풍선 스타일
     .chat-bubble {{
         position: relative;
         background-color: #f0f2f6;
@@ -86,10 +85,27 @@ with col_widget:
     if st.button("🙂", key="chat_toggle_btn", help="챗봇 열기/닫기"):
         st.session_state.chat_open = not st.session_state.chat_open
 
-    if st.session_state.chat_open:
-        st.markdown(f"""
-        <div class="chat-bubble">{st.session_state.bot_message}</div>
-        """, unsafe_allow_html=True)
+
+# 대화 기록
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = [
+        ("assistant", "안녕하세요 🙂\n인화여고 전자도서관 AI입니다.\n무엇을 도와드릴까요?")
+    ]
+
+if st.session_state.chat_open:
+
+    with st.container(border=True):
+        st.markdown("### 🙂 인화여고 전자 도서관 인공지능")
+        for role, message in st.session_state.chat_history:
+            with st.chat_message(role):
+                st.write(message)
+
+    user_input = st.chat_input("도서 추천이나 문의를 입력하세요.")
+    if user_input:
+        st.session_state.chat_history.append(("user", user_input))
+        answer = "AI의 답변이 여기에 표시됩니다."
+        st.session_state.chat_history.append(("assistant", answer))
+        st.rerun()
 
 st.markdown("<div style='margin-bottom:20px;'></div>", unsafe_allow_html=True)
 
