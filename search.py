@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd
+import random
 
 if "bot_message" not in st.session_state:
     st.session_state.bot_message = "무엇을 도와드릴까요?"
@@ -79,28 +79,47 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
+placeholders = [
+    "📚 도서 추천을 받아보세요.",
+    "🔍 전자도서관 이용법을 물어보세요.",
+    "📖 읽고 싶은 분야를 입력해보세요.",
+    "✨ 오늘 읽을 책을 추천해드릴게요.",
+    "💡 궁금한 점을 자유롭게 질문해보세요."
+]
+
+if "chat_placeholder" not in st.session_state:
+    st.session_state.chat_placeholder = "도서 추천이나 문의를 입력하세요."
+
+
 # 챗봇
 col_widget, col_empty = st.columns([2, 6])
+
 with col_widget:
     if st.button("🙂", key="chat_toggle_btn", help="챗봇 열기/닫기"):
         st.session_state.chat_open = not st.session_state.chat_open
+
+        if st.session_state.chat_open:
+            st.session_state.chat_placeholder = random.choice(placeholders)
+
+
 
 
 # 대화 기록
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        ("assistant", "안녕하세요 🙂\n인화여고 전자도서관 AI입니다.\n무엇을 도와드릴까요?")
+        ("assistant", "안녕하세요😊\n인화여고 전자도서관 AI입니다.\n무엇을 도와드릴까요?")
     ]
 
 if st.session_state.chat_open:
 
     with st.container(border=True):
-        st.markdown("### 🙂 인화여고 전자 도서관 인공지능")
+        st.markdown("### 인화여고 전자도서관 인공지능")
         for role, message in st.session_state.chat_history:
             with st.chat_message(role):
                 st.write(message)
 
-    user_input = st.chat_input("도서 추천이나 문의를 입력하세요.")
+    user_input = st.chat_input(st.session_state.chat_placeholder)
+
     if user_input:
         st.session_state.chat_history.append(("user", user_input))
         answer = "AI의 답변이 여기에 표시됩니다."
